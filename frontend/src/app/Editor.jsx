@@ -33,6 +33,7 @@ import {
 
 export default function Editor({
   account,
+  metricsEnabled,
   navigate,
   logout,
   path,
@@ -592,7 +593,7 @@ export default function Editor({
         <div className="editor-content">
           <span className="eyebrow">GESTIÓN DE CONTENIDO</span>
           <h1>{labels[active] || 'Editor'}</h1>
-        <p className="editor-guide">{({portada: 'Personalice la bienvenida de su sitio. Seleccione la portada para editar su título y descripción.', productos: 'Administre su catálogo: cree un producto, agregue fotos y revise la vista previa antes de publicar.', servicios: 'Muestre lo que ofrece el bazar y cómo solicitar cada servicio.', imagenes: 'Suba sus fotografías y reutilícelas en productos, servicios y galería.', promociones: 'Prepare sus promociones, fechas y productos participantes.', galeria: 'Comparta trabajos reales e ideas para sus clientes.', textos: 'Actualice la información complementaria del sitio.', contacto: 'Mantenga al día teléfonos, horarios y ubicaciones.', usuarios: 'Administre las cuentas del equipo y sus permisos de acceso.'})[active]}</p>
+        <p className="editor-guide">{({portada: 'Personalice la bienvenida de su sitio. Seleccione la portada para editar su título, descripción e imagen.', productos: 'Administre su catálogo: cree un producto, agregue fotos y revise la vista previa antes de publicar.', servicios: 'Muestre lo que ofrece el bazar y cómo solicitar cada servicio.', imagenes: 'Suba sus fotografías y reutilícelas en productos, servicios y galería.', promociones: 'Prepare sus promociones, fechas y productos participantes.', galeria: 'Comparta trabajos reales e ideas para sus clientes.', textos: 'Actualice la información complementaria del sitio.', contacto: 'Actualice la dirección, el horario y el contacto de la sede central.', usuarios: 'Administre las cuentas del equipo y sus permisos de acceso.'})[active]}</p>
           <EditorHelp key={active} title="¿Cómo hago un cambio?">
             <p><b>1. Edite</b> un contenido existente o cree uno nuevo.</p>
             <p><b>2. Revise</b> sus textos y fotografías en Vista previa.</p>
@@ -605,7 +606,7 @@ export default function Editor({
             </div>
           )}
           {busy && <p role="status">Procesando…</p>}
-          {active === 'productos' && permitted('productos') && (
+          {metricsEnabled && active === 'productos' && permitted('productos') && (
             <WhatsAppMetrics />
           )}
           {!permitted(active) ? (

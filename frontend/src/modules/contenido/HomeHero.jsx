@@ -1,8 +1,10 @@
 import { useLanguage } from '../../shared/Language.jsx';
 import React from 'react';
 import { BazarDoodle } from '../../shared/Icons.jsx';
+import { imageUrl } from '../../shared/images.js';
 export default function HomeHero({ hero, images }) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
+  const cover = imageUrl(hero?.imagenId);
 
   return (
     <section className="hero-band" id="inicio">
@@ -53,8 +55,8 @@ export default function HomeHero({ hero, images }) {
             <BazarDoodle kind="spark" /> {t('Detalles con personalidad')}{' '}
           </span>
           <div className="photo-frame photo-main">
-            <img src="/images/vasos-personalizados.jpeg"
-              alt={t('Vasos de vidrio personalizados con iniciales doradas, preparados en una caja de regalo')}
+            <img src={cover || '/images/vasos-personalizados.jpeg'}
+              alt={cover ? (images[hero.imagenId] || '') : t('Vasos de vidrio personalizados con iniciales doradas, preparados en una caja de regalo')}
               width="720" height="1280" fetchPriority="high" />
             <span>{t('Algo pequeño, algo especial.')}</span>
           </div>

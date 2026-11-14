@@ -3,6 +3,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { api, json } from '../shared/api.js';
 import Public from './PublicPage.jsx';
 import Editor from './Editor.jsx';
+import { schedulePromotionBoundary } from '../modules/promociones/publicPromotions.js';
 
 export default function App() {
   const [path, setPath] = useState(location.pathname),
@@ -59,32 +60,42 @@ export default function App() {
   }, [loading, account, path]);
   // Una pestaña pública puede seguir abierta mientras se edita en otra.
   const previousPath = useRef(path);
+  const nextPromotionStart = data?.proximoInicioPromocion;
   useEffect(() => {
     const returningFromEditor = previousPath.current.startsWith('/contenido') && !path.startsWith('/contenido');
     previousPath.current = path;
     if (loading || path.startsWith('/contenido') || path === '/login') return;
     let request;
-    const refresh = () => {
+    const refresh = (reportError = true) => {
       request?.abort();
       request = new AbortController();
       const current = request;
       api('/publico', { cache: 'no-store', signal: current.signal })
         .then((next) => { if (!current.signal.aborted) { setData(next); setPublicError(''); } })
-        .catch(() => { if (!current.signal.aborted) setPublicError('No pudimos actualizar el bazar. Compruebe su conexión y vuelva a intentarlo.'); });
+        .catch(() => {
+          if (reportError && !current.signal.aborted)
+            setPublicError('No pudimos actualizar el bazar. Compruebe su conexión y vuelva a intentarlo.');
+        });
     };
+    const onFocus = () => refresh();
     const onVisible = () => { if (document.visibilityState === 'visible') refresh(); };
     const onPageShow = (event) => { if (event.persisted) window.location.reload(); };
     if (returningFromEditor) refresh();
-    window.addEventListener('focus', refresh);
+    window.addEventListener('focus', onFocus);
     window.addEventListener('pageshow', onPageShow);
     document.addEventListener('visibilitychange', onVisible);
+    const start = Date.parse(nextPromotionStart);
+    const cancelPromotionRefresh = Number.isFinite(start)
+      ? schedulePromotionBoundary(start, () => refresh(false))
+      : undefined;
     return () => {
       request?.abort();
-      window.removeEventListener('focus', refresh);
+      cancelPromotionRefresh?.();
+      window.removeEventListener('focus', onFocus);
       window.removeEventListener('pageshow', onPageShow);
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [path, loading]);
+  }, [path, loading, nextPromotionStart]);
   async function submit(e) {
     e.preventDefault();
     if (loginInFlight.current) return;
@@ -123,6 +134,7 @@ export default function App() {
     return (
       <Editor
         account={account}
+        metricsEnabled={data?.medicionWhatsApp === true}
         navigate={navigate}
         logout={logout}
         path={path}

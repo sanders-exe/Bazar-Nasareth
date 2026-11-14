@@ -1,27 +1,13 @@
 import { useLanguage } from '../../shared/Language.jsx';
 import React from 'react';
 import { BazarDoodle, SocialIcon } from '../../shared/Icons.jsx';
-import { businessEntries } from './contact.js';
 export default function ContactSection({ business }) {
-  const { t, language } = useLanguage();
-
-  const addresses = businessEntries(business.direccion, [
-    t('Tienda principal'),
-    t('Tienda de fiestas'),
-  ]);
-  const schedules = businessEntries(business.horario, [
-    t('Tienda principal'),
-    t('Tienda de fiestas'),
-  ]);
-  const stores = addresses.map((address, index) => ({
-    name: address.label,
-    address: address.value,
-    schedule: schedules[index]?.value || t('Consulte el horario'),
-  }));
+  const { t } = useLanguage();
+  const mapUrl = `https://www.google.com/maps?${new URLSearchParams({ q: business.direccion })}`;
 
   return (
     <section id="contacto" className="wrap section contact">
-      <span className="eyebrow">{t('NUESTRAS TIENDAS')}</span>
+      <span className="eyebrow">{t('Sede central')}</span>
       <h2>
         {' '}
         {t('Su próxima idea')} <br /> {t('empieza con un')}{' '}
@@ -34,26 +20,18 @@ export default function ContactSection({ business }) {
         )}{' '}
       </p>
       <BazarDoodle kind="gift" className="contact-gift" />
-      <div className="store-grid">
-        {stores.map((store) => (
-          <article className="store-card" key={store.name}>
-            <span>
-              {t('Local')} {stores.indexOf(store) + 1}
-            </span>
-            <h3>{store.name}</h3>
-            <p>
-              <b>{t('Dirección')}</b>
-              <br />
-              {store.address}
-            </p>
-            <p>
-              <b>{t('Horario')}</b>
-              <br />
-              {store.schedule}
-            </p>
-          </article>
-        ))}
-      </div>
+      <article className="store-card">
+        <p>
+          <b>{t('Dirección')}</b>
+          <br />
+          {business.direccion}
+        </p>
+        <p>
+          <b>{t('Horario')}</b>
+          <br />
+          {business.horario}
+        </p>
+      </article>
       <div className="contact-grid contact-details">
         <p>
           <b>{t('Teléfono')}</b>
@@ -71,12 +49,12 @@ export default function ContactSection({ business }) {
       <div className="location-map">
         <iframe
           title={t('Mapa de Bazar Nazareth en Hojancha')}
-          src="https://www.google.com/maps?q=10.0576279,-85.4188402&z=19&output=embed"
+          src={`${mapUrl}&z=19&output=embed`}
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
         />
         <a
-          href="https://www.google.com/maps?q=10.0576279,-85.4188402"
+          href={mapUrl}
           target="_blank"
           rel="noopener noreferrer"
         >

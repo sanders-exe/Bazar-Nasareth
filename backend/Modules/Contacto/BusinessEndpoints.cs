@@ -7,11 +7,14 @@ public static class BusinessEndpoints
 {
     public static void Map(RouteGroupBuilder admin)
     {
-        admin.MapGet("/negocio", async (HttpContext ctx, BazarDb db) => await Actor(ctx, db) is not null ? Results.Ok(await db.Negocio.SingleAsync(x => x.Id == 1)) : Results.Forbid());
+        admin.MapGet("/negocio", async (HttpContext ctx, BazarDb db) => await Actor(ctx, db) is not null
+            ? Results.Ok((await db.Negocio.AsNoTracking().SingleAsync(x => x.Id == 1)).UseCentralOffice())
+            : Results.Forbid());
         admin.MapPut("/negocio", async (InformacionNegocio input, HttpContext ctx, BazarDb db) =>
         {
             if (!Allowed(ctx, await Actor(ctx, db), "contacto"))
                 return Results.Forbid();
+            input.UseCentralOffice();
             if (string.IsNullOrWhiteSpace(input.Nombre) || string.IsNullOrWhiteSpace(input.Direccion) || string.IsNullOrWhiteSpace(input.Horario) || Regex.Replace(input.Telefono ?? "", "[^0-9]", "").Length is < 8 or > 15 || (!string.IsNullOrWhiteSpace(input.Email) && !MailAddress.TryCreate(input.Email, out _)) || !Uri.TryCreate(input.EnlaceContacto, UriKind.Absolute, out var contactLink) || contactLink.Scheme != Uri.UriSchemeHttps)
                 return Results.BadRequest("Complete nombre, dirección, horario, teléfono válido y enlace HTTPS; revise el correo opcional.");
             var item = await db.Negocio.SingleAsync(x => x.Id == 1);

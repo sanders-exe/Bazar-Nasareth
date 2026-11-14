@@ -5,6 +5,14 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 
+if (args is ["--schema"])
+{
+    using var schema = new BazarDb(new DbContextOptionsBuilder<BazarDb>()
+        .UseSqlServer("Server=unused;Database=unused;Integrated Security=True").Options);
+    Console.Write(schema.Database.GenerateCreateScript());
+    return;
+}
+
 int checks = 0;
 void Check(bool condition, string message)
 {
@@ -68,6 +76,19 @@ Check(MetricsEndpoints.CostaRicaDay(DateTimeOffset.Parse("2026-10-31T06:00:00Z")
 using var db = new BazarDb(new DbContextOptionsBuilder<BazarDb>().UseSqlServer("Server=unused;Database=unused;Integrated Security=True").Options);
 var sql = ProductSharing.PublicProducts(db).Where(p => p.Id == 17).ToQueryString();
 Check(sql.Contains("Publicado") && sql.Contains("Activa") && sql.Contains("ProductoImagen"), "El detalle y los clics deben respetar publicación, categoría e imagen.");
+var promotionSql = PromotionVisibility.Current(db, DateTimeOffset.Parse("2026-11-14T16:00:00Z")).ToQueryString();
+Check(promotionSql.Contains("[Inicio] <=") && promotionSql.Contains(" < [p].[Fin]"),
+    "SQL debe incluir el inicio y excluir el instante de fin al consultar promociones públicas.");
+var legacyContact = new InformacionNegocio
+{
+    Direccion = "Tienda de fiestas | Otra dirección\r\nTienda principal | Dirección central",
+    Horario = "Tienda principal | Horario central\r\nTienda de fiestas | Otro horario"
+}.UseCentralOffice();
+Check(legacyContact.Direccion == "Dirección central" && legacyContact.Horario == "Horario central",
+    "Los datos heredados muestran la misma sede central aunque el orden de los locales cambie.");
+legacyContact.Horario = "Lunes a viernes, 9:00 a 17:00\nSábado, 9:00 a 12:00";
+Check(legacyContact.UseCentralOffice().Horario.Contains("\nSábado"),
+    "La sede central puede tener un horario con varias líneas.");
 var start = new DateOnly(2026, 10, 1);
 var metricsSql = db.ClicsWhatsApp.Where(c => c.Dia >= start)
     .Join(db.Productos, c => c.ProductoId, p => p.Id, (c, p) => new { c.ProductoId, c.Cantidad, c.Origen, p.Nombre })

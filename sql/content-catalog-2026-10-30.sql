@@ -189,10 +189,8 @@ JOIN dbo.Imagen image ON image.Ruta = source.Ruta
 WHERE NOT EXISTS (SELECT 1 FROM dbo.GaleriaImagen target WHERE target.ImagenId = image.Id);
 
 UPDATE dbo.InformacionNegocio SET
-    Direccion = N'Tienda principal | 25 m sur y 10 m oeste de Correos de Costa Rica, Hojancha, Guanacaste.' + CHAR(10) +
-                N'Tienda de fiestas | 25 m sur de Correos de Costa Rica, Hojancha, Guanacaste.',
-    Horario = N'Tienda principal | Lunes a sábado, de 8:00 a. m. a 6:00 p. m.' + CHAR(10) +
-              N'Tienda de fiestas | Lunes a sábado, de 9:00 a. m. a 4:00 p. m.'
+    Direccion = N'25 m sur y 10 m oeste de Correos de Costa Rica, Hojancha, Guanacaste.',
+    Horario = N'Lunes a sábado, de 8:00 a. m. a 6:00 p. m.'
 WHERE Id = 1;
 
 COMMIT TRANSACTION;

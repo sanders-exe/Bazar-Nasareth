@@ -12,7 +12,7 @@ public static class ImageEndpoints
             if (img is null)
                 return Results.NotFound();
             var now = DateTimeOffset.UtcNow;
-            var visible = await db.ProductoImagenes.AnyAsync(x => x.ImagenId == id && x.Producto.Estado == "Publicado" && x.Producto.Categoria.Activa) || await db.Servicios.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado") || await db.Promociones.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado" && now < x.Fin) || await db.Galeria.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado") || await db.Secciones.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado");
+            var visible = await db.ProductoImagenes.AnyAsync(x => x.ImagenId == id && x.Producto.Estado == "Publicado" && x.Producto.Categoria.Activa) || await db.Servicios.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado") || await PromotionVisibility.Current(db, now).AnyAsync(x => x.ImagenId == id) || await db.Galeria.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado") || await db.Secciones.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado");
             if (!visible && await Actor(ctx, db) is null)
                 return Results.NotFound();
             var file = Path.Combine(storage, Path.GetFileName(img.Ruta));

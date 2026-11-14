@@ -15,6 +15,15 @@ function formattedPrice(value, currency, language = 'es') {
       : 'Consultar precio'
     : `${currency || 'CRC'} ${Number(value).toLocaleString(language === 'en' ? 'en-US' : 'es-CR', { minimumFractionDigits: 2 })}`;
 }
+function formatPromotionDate(value, language = 'es') {
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return '';
+  return new Intl.DateTimeFormat(language === 'en' ? 'en-US' : 'es-CR', {
+    timeZone: 'America/Costa_Rica',
+    dateStyle: 'long',
+    timeStyle: 'short',
+  }).format(timestamp);
+}
 function promotionTimingLabel(promotion, now = Date.now()) {
   const start = promotion.inicio ? new Date(promotion.inicio).getTime() : NaN;
   const end = promotion.fin ? new Date(promotion.fin).getTime() : NaN;
@@ -24,4 +33,4 @@ function promotionTimingLabel(promotion, now = Date.now()) {
   if (now >= end) return 'Finalizada';
   return 'Vigente';
 }
-export { toCostaRicaInput, formattedPrice, promotionTimingLabel };
+export { toCostaRicaInput, formattedPrice, formatPromotionDate, promotionTimingLabel };

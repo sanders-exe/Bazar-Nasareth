@@ -14,11 +14,28 @@ public static class PublicEndpoints
             var productIds = productos.Select(x => x.Id).ToArray();
             var productImages = await db.ProductoImagenes.AsNoTracking().Where(x => productIds.Contains(x.ProductoId)).OrderBy(x => x.Orden).ToListAsync();
             var servicios = await db.Servicios.AsNoTracking().Where(x => x.Estado == "Publicado" && !string.IsNullOrWhiteSpace(x.Nombre) && !string.IsNullOrWhiteSpace(x.Descripcion) && !string.IsNullOrWhiteSpace(x.Alcance)).OrderBy(x => x.Orden).ToListAsync();
-            var promociones = await db.Promociones.AsNoTracking().Where(x => x.Estado == "Publicado" && !string.IsNullOrWhiteSpace(x.Titulo) && !string.IsNullOrWhiteSpace(x.Descripcion) && !string.IsNullOrWhiteSpace(x.Condiciones) && x.ImagenId.HasValue && x.Inicio.HasValue && x.Fin.HasValue && now < x.Fin).OrderBy(x => x.Orden).ToListAsync();
+            var promociones = await PromotionVisibility.Current(db, now).OrderBy(x => x.Orden).ToListAsync();
+            var promotionIds = promociones.Select(x => x.Id).ToArray();
+            var serviceIds = servicios.Select(x => x.Id).ToArray();
+            var proximoInicioPromocion = await PromotionVisibility.PublicCandidates(db)
+                .Where(p => now < p.Inicio).OrderBy(p => p.Inicio)
+                .Select(p => p.Inicio).FirstOrDefaultAsync();
             var galeria = await db.Galeria.AsNoTracking().Where(x => x.Estado == "Publicado" && db.Imagenes.Any(i => i.Id == x.ImagenId)).OrderBy(x => x.Orden).ToListAsync();
             var secciones = await db.Secciones.AsNoTracking().Where(x => x.Estado == "Publicado" && !string.IsNullOrWhiteSpace(x.Titulo) && !string.IsNullOrWhiteSpace(x.Cuerpo)).OrderBy(x => x.Orden).ToListAsync();
             var imagenes = await db.Imagenes.AsNoTracking().Select(x => new { x.Id, x.TextoAlternativo }).ToListAsync();
-            return Results.Ok(new { negocio = await db.Negocio.AsNoTracking().SingleAsync(x => x.Id == 1), medicionWhatsApp = configuration.GetValue<bool>("MedicionWhatsApp:Enabled"), categorias, productos = productos.Select(x => new { x.Id, x.CategoriaId, x.Nombre, x.Descripcion, x.PrecioInformativo, x.Moneda, x.Destacado, imagenes = productImages.Where(i => i.ProductoId == x.Id).Select(i => i.ImagenId).ToArray() }), servicios, promociones, galeria, secciones, imagenes, promocionProductos = await db.PromocionProductos.AsNoTracking().Where(x => productIds.Contains(x.ProductoId) && db.Promociones.Any(p => p.Id == x.PromocionId && p.Estado == "Publicado" && now < p.Fin)).ToListAsync(), promocionServicios = await db.PromocionServicios.AsNoTracking().Where(x => db.Promociones.Any(p => p.Id == x.PromocionId && p.Estado == "Publicado" && now < p.Fin)).ToListAsync() });
+            var negocio = (await db.Negocio.AsNoTracking().SingleAsync(x => x.Id == 1)).UseCentralOffice();
+            var promocionProductos = await db.PromocionProductos.AsNoTracking()
+                .Where(x => productIds.Contains(x.ProductoId) && promotionIds.Contains(x.PromocionId)).ToListAsync();
+            var promocionServicios = await db.PromocionServicios.AsNoTracking()
+                .Where(x => serviceIds.Contains(x.ServicioId) && promotionIds.Contains(x.PromocionId)).ToListAsync();
+            return Results.Ok(new
+            {
+                negocio,
+                medicionWhatsApp = configuration.GetValue<bool>("MedicionWhatsApp:Enabled"),
+                categorias,
+                productos = productos.Select(x => new { x.Id, x.CategoriaId, x.Nombre, x.Descripcion, x.PrecioInformativo, x.Moneda, x.Destacado, imagenes = productImages.Where(i => i.ProductoId == x.Id).Select(i => i.ImagenId).ToArray() }),
+                servicios, promociones, proximoInicioPromocion, galeria, secciones, imagenes, promocionProductos, promocionServicios
+            });
         });
     }
 }

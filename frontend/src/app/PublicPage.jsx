@@ -11,6 +11,7 @@ import { AdminIcon, BazarDoodle } from '../shared/Icons.jsx';
 import ProductCatalog from '../modules/productos/ProductCatalog.jsx';
 import ServicesSection from '../modules/servicios/ServicesSection.jsx';
 import PromotionsSection from '../modules/promociones/PromotionsSection.jsx';
+import { activePromotions, schedulePromotionBoundary } from '../modules/promociones/publicPromotions.js';
 import ChristmasSnow from '../modules/promociones/ChristmasSnow.jsx';
 import {
   isActiveChristmasPromotion,
@@ -26,7 +27,6 @@ import {
   catalogReturnUrl,
   filterCatalog,
 } from '../modules/productos/catalogFilters.js';
-import { promotionTimingLabel } from '../shared/format.js';
 import {
   useReadingPreferences,
   ContrastToggle,
@@ -50,6 +50,14 @@ function PublicContent({ originalData }) {
   const reading = useReadingPreferences();
   const [themeFeedback, setThemeFeedback] = useState(null);
   const [snowReplay, setSnowReplay] = useState(0);
+  const [, refreshPromotionDisplay] = useState(0);
+  const now = Date.now();
+  const promotions = activePromotions(data.promociones, now);
+  const nextExpiration = Math.min(...promotions.map((promotion) => Date.parse(promotion.fin)));
+  useEffect(() => {
+    if (Number.isFinite(nextExpiration))
+      return schedulePromotionBoundary(nextExpiration, () => refreshPromotionDisplay((value) => value + 1));
+  }, [nextExpiration]);
   const christmasPromotions = useMemo(
     () => originalData.promociones.filter(isChristmasPromotion),
     [originalData.promociones],
@@ -62,11 +70,7 @@ function PublicContent({ originalData }) {
     setFilters((current) => ({ ...current, category: value }));
   const setSearch = (value) =>
     setFilters((current) => ({ ...current, search: value }));
-  const promotion = data.promociones.find(
-    (item) =>
-      String(item.id) === promotionId &&
-      promotionTimingLabel(item) === 'Vigente',
-  );
+  const promotion = promotions.find((item) => String(item.id) === promotionId);
   const campaign = promotion?.titulo || '';
   const returnUrl = catalogReturnUrl({ ...filters, language });
   useEffect(() => {
@@ -148,7 +152,7 @@ function PublicContent({ originalData }) {
       id: 'promociones',
       title: 'Descubra nuestras promociones',
       tag: 'Consulte las novedades',
-      imageId: data.promociones[0]?.imagenId,
+      imageId: promotions[0]?.imagenId,
       symbol: 'spark',
     },
   ];
@@ -313,7 +317,7 @@ function PublicContent({ originalData }) {
         />
         <ServicesSection data={data} images={images} business={business} />
         <PromotionsSection
-          data={data}
+          promotions={promotions}
           images={images}
           openCampaign={openCampaign}
         />
@@ -325,7 +329,9 @@ function PublicContent({ originalData }) {
         <div className="wrap">
           <b>{business.nombre}</b>
           <span>
-            {t('Dos tiendas en Hojancha ·')} {business.telefono}
+            {business.direccion}{'\n'}
+            {t('Horario')}: {business.horario}{'\n'}
+            {business.telefono}
           </span>
           <a className="editor-access" href="/login" aria-label={t('Acceso al editor')} title={t('Acceso al editor')}><AdminIcon /></a>
         </div>

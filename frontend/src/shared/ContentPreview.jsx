@@ -1,6 +1,6 @@
 import React from 'react';
 import Img from './Img.jsx';
-import { formattedPrice } from './format.js';
+import { formattedPrice, formatPromotionDate } from './format.js';
 import Modal from './Modal.jsx';
 export default function ContentPreview({
   closePreview,
@@ -34,6 +34,13 @@ export default function ContentPreview({
           {draft.condiciones && (
             <p>
               <b>Condiciones:</b> {draft.condiciones}
+            </p>
+          )}
+          {active === 'promociones' && (
+            <p>
+              <b>Vigencia (Costa Rica)</b><br />
+              Inicio: {formatPromotionDate(draft.inicio) || 'Sin definir'}<br />
+              Fin: {formatPromotionDate(draft.fin) || 'Sin definir'}
             </p>
           )}
           {active === 'productos' && (
