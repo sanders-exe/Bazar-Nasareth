@@ -12,7 +12,6 @@ export default function Field({
   error,
   required = false,
   form,
-  emptyOption,
 }) {
   const hint = kind === 'status' ? 'Borrador: solo el equipo lo ve. Publicado: visible en el sitio. Archivado: oculto, se puede recuperar.'
     : kind === 'image' ? 'Elija una foto de la biblioteca. Subir una foto no la asigna automáticamente.'
@@ -78,9 +77,9 @@ export default function Field({
       ) : ['status', 'category', 'image', 'currency'].includes(kind) ? (
         <select {...common} value={value ?? ''}>
           <option value="">
-            {emptyOption ?? (kind === 'image' || kind === 'currency'
+            {kind === 'image' || kind === 'currency'
               ? 'Sin seleccionar'
-              : 'Seleccione...')}
+              : 'Seleccione...'}
           </option>
           {options.map(([v, l]) => (
             <option key={v} value={v}>

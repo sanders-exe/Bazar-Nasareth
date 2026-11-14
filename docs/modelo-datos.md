@@ -37,7 +37,7 @@ erDiagram
 | `PromocionProducto` | `PromocionId`, `ProductoId` int | PK compuesta. FKs a `Promocion` y `Producto`. |
 | `PromocionServicio` | `PromocionId`, `ServicioId` int | PK compuesta. FKs a `Promocion` y `Servicio`. |
 | `Imagen` | `Id` int; `Ruta`, `Nombre`, `TipoMime`, `TextoAlternativo` texto; `TamanoBytes` bigint | PK `Id`. La API genera el nombre físico, valida PNG, JPEG o WebP y limita la carga a 5 MB. `Ruta` identifica el archivo bajo `ImageDirectory`. |
-| `SeccionContenido` | `Id` int; `Clave`, `Titulo`, `Cuerpo` texto; `ImagenId`, `Imagen2Id` int?; `Orden` int; `Estado` texto | PK `Id`, UQ `Clave`, ambas imágenes son FK opcionales a `Imagen`. Solo `portada` admite `Imagen2Id`. Publicar exige título y cuerpo. |
+| `SeccionContenido` | `Id` int; `Clave`, `Titulo`, `Cuerpo` texto; `ImagenId` int?; `Orden` int; `Estado` texto | PK `Id`, UQ `Clave`, FK opcional a `Imagen`. La clave `portada` identifica la portada. Publicar exige título y cuerpo. |
 | `GaleriaImagen` | `Id`, `ImagenId`, `Orden` int; `Titulo` texto?; `Estado` texto | PK `Id`, UQ `Orden`, FK obligatoria a `Imagen`. Archivar oculta la entrada y conserva su referencia. |
 | `InformacionNegocio` | `Id` int; `Nombre`, `Direccion`, `Horario`, `Telefono`, `EnlaceContacto` texto; `Email`, `Redes` texto? | PK `Id` con `CHECK (Id = 1)`. Contacto y pie de página leen el mismo registro. |
 | `Editor` | `Id` int; `Nombre`, `Email`, `PasswordHash`, `Permisos` texto; `Activo`, `Completo` bit | PK `Id`, UQ `Email`. La cuenta inicial se crea mediante variables de entorno. Permisos separados por comas cuando `Completo` es falso. |

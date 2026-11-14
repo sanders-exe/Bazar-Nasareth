@@ -5,7 +5,6 @@ public class SeccionContenido : IPublishableRecord
     public string Titulo { get; set; } = "";
     public string Cuerpo { get; set; } = "";
     public int? ImagenId { get; set; }
-    public int? Imagen2Id { get; set; }
     public int Orden { get; set; }
     public string Estado { get; set; } = "Borrador";
 }

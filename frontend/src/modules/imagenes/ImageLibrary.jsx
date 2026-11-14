@@ -113,7 +113,7 @@ export default function ImageLibrary({
                 <p>{img.textoAlternativo}</p>
                 <small>{(img.tamanoBytes / 1024 / 1024).toFixed(2)} MB</small>
                 {usages.map((usage) => (
-                  <div className="image-usage" key={`${usage.kind}-${usage.id}-${usage.field || ''}`}>
+                  <div className="image-usage" key={`${usage.kind}-${usage.id}`}>
                     <small>{usage.section}</small>
                     <b>{usage.title}</b>
                     <label className="button image-replace-button">

@@ -171,8 +171,6 @@ Check(await PromotionValidation.Validate(new Promocion { Estado = "Borrador" }, 
 Check(await PromotionValidation.Validate(new Promocion { Inicio = DateTimeOffset.UtcNow, Fin = DateTimeOffset.UtcNow.AddDays(-1) }, db) is not null,
     "Promociones conserva la validación de vigencia.");
 Check(await SectionValidation.Validate(new SeccionContenido { Clave = "preguntas", Estado = "Borrador" }, db) is null, "Contenido admite un borrador con clave.");
-Check(await SectionValidation.Validate(new SeccionContenido { Clave = "preguntas", Imagen2Id = 8 }, db) is not null,
-    "La segunda imagen se reserva para la portada.");
 Check(await GalleryValidation.Validate(new GaleriaImagen { Orden = -1 }, db) is not null, "Galería rechaza un orden negativo.");
 
 Console.WriteLine($"{checks} comprobaciones correctas. Sin conexión ni cambios en SQL Server.");

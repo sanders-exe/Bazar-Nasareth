@@ -2,7 +2,6 @@ import React from 'react';
 import Img from './Img.jsx';
 import { formattedPrice, formatPromotionDate } from './format.js';
 import Modal from './Modal.jsx';
-import { coverImageFields, coverImages } from '../modules/contenido/coverImages.js';
 export default function ContentPreview({
   closePreview,
   active,
@@ -24,21 +23,12 @@ export default function ContentPreview({
           </button>
         </div>
         <div className="preview-card">
-          {active === 'portada' ? (
-            <div className="cover-preview">
-              {coverImages(draft, imgAlt).map((photo, index) => (
-                <figure key={coverImageFields[index].name}>
-                  <img {...photo} />
-                  <figcaption>{coverImageFields[index].label}</figcaption>
-                </figure>
-              ))}
-            </div>
-          ) : (
-            <Img
-              id={active === 'productos' ? relationIds[0] : draft.imagenId}
-              alt={imgAlt(active === 'productos' ? relationIds[0] : draft.imagenId)}
-            />
-          )}
+          <Img
+            id={active === 'productos' ? relationIds[0] : draft.imagenId}
+            alt={imgAlt(
+              active === 'productos' ? relationIds[0] : draft.imagenId,
+            )}
+          />
           <h3>{draft.nombre || draft.titulo || draft.clave}</h3>
           <p>{draft.descripcion || draft.cuerpo}</p>
           {draft.condiciones && (

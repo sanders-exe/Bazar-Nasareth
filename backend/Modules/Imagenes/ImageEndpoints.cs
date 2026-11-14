@@ -12,12 +12,7 @@ public static class ImageEndpoints
             if (img is null)
                 return Results.NotFound();
             var now = DateTimeOffset.UtcNow;
-            var visible = await db.ProductoImagenes.AnyAsync(x => x.ImagenId == id && x.Producto.Estado == "Publicado" && x.Producto.Categoria.Activa)
-                || await db.Servicios.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado")
-                || await PromotionVisibility.Current(db, now).AnyAsync(x => x.ImagenId == id)
-                || await db.Galeria.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado")
-                || await db.Secciones.AnyAsync(x => x.Estado == "Publicado"
-                    && (x.ImagenId == id || (x.Clave == "portada" && x.Imagen2Id == id)));
+            var visible = await db.ProductoImagenes.AnyAsync(x => x.ImagenId == id && x.Producto.Estado == "Publicado" && x.Producto.Categoria.Activa) || await db.Servicios.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado") || await PromotionVisibility.Current(db, now).AnyAsync(x => x.ImagenId == id) || await db.Galeria.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado") || await db.Secciones.AnyAsync(x => x.ImagenId == id && x.Estado == "Publicado");
             if (!visible && await Actor(ctx, db) is null)
                 return Results.NotFound();
             var file = Path.Combine(storage, Path.GetFileName(img.Ruta));
@@ -91,7 +86,7 @@ public static class ImageEndpoints
             var img = await db.Imagenes.FindAsync(id);
             if (img is null)
                 return Results.NotFound();
-            if (await db.ProductoImagenes.AnyAsync(x => x.ImagenId == id) || await db.Servicios.AnyAsync(x => x.ImagenId == id) || await db.Promociones.AnyAsync(x => x.ImagenId == id) || await db.Secciones.AnyAsync(x => x.ImagenId == id || x.Imagen2Id == id) || await db.Galeria.AnyAsync(x => x.ImagenId == id))
+            if (await db.ProductoImagenes.AnyAsync(x => x.ImagenId == id) || await db.Servicios.AnyAsync(x => x.ImagenId == id) || await db.Promociones.AnyAsync(x => x.ImagenId == id) || await db.Secciones.AnyAsync(x => x.ImagenId == id) || await db.Galeria.AnyAsync(x => x.ImagenId == id))
                 return Results.Conflict("La imagen mantiene referencias activas.");
             db.Imagenes.Remove(img);
             await db.SaveChangesAsync();

@@ -1,6 +1,5 @@
 import React from 'react';
 import Img from '../../shared/Img.jsx';
-import { coverImageFields } from '../contenido/coverImages.js';
 export default function InlineImageTools({
   permitted,
   uploadInlineImage,
@@ -11,11 +10,7 @@ export default function InlineImageTools({
   relationIds,
   draft,
   imgAlt,
-  coverUploadSlot,
-  setCoverUploadSlot,
 }) {
-  const currentImage = active === 'productos' ? relationIds[0]
-    : draft[active === 'portada' ? coverUploadSlot : 'imagenId'];
   return (
     <div className="inline-image-tools">
       <h3>Imagen de este contenido</h3>
@@ -26,14 +21,6 @@ export default function InlineImageTools({
       </p>
       {permitted('imagenes') ? (
         <form className="inline-image-form" onSubmit={uploadInlineImage}>
-          {active === 'portada' && (
-            <label className="field">
-              Asignar a
-              <select value={coverUploadSlot} onChange={(e) => setCoverUploadSlot(e.target.value)} disabled={busy}>
-                {coverImageFields.map(({ name, label }) => <option key={name} value={name}>{label}</option>)}
-              </select>
-            </label>
-          )}
           <label className="field">
             Archivo JPG, PNG o WebP (máximo 5 MB)
             <input
@@ -92,12 +79,14 @@ export default function InlineImageTools({
           «Imágenes» o use una imagen ya cargada.
         </p>
       )}
-      {currentImage && (
+      {(active === 'productos' ? relationIds[0] : draft.imagenId) && (
         <div className="inline-image-preview">
           <span>Vista previa de la imagen asignada</span>
           <Img
-            id={currentImage}
-            alt={imgAlt(currentImage)}
+            id={active === 'productos' ? relationIds[0] : draft.imagenId}
+            alt={imgAlt(
+              active === 'productos' ? relationIds[0] : draft.imagenId,
+            )}
           />
         </div>
       )}
