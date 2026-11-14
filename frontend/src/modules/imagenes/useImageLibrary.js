@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { api, json } from '../../shared/api.js';
 import { labels } from '../../app/adminConfig.js';
+import { coverImageFields } from '../contenido/coverImages.js';
 export default function useImageLibrary({
   data,
   permitted,
@@ -86,7 +87,7 @@ export default function useImageLibrary({
           );
         await api(`/admin/${route}/${usage.id}`, {
           method: 'PUT',
-          ...json({ ...item, imagenId: replacement.id }),
+          ...json({ ...item, [usage.field || 'imagenId']: replacement.id }),
         });
       }
       await reload();
@@ -177,14 +178,18 @@ export default function useImageLibrary({
         permission: 'galeria',
       })),
     ...(data.secciones || [])
-      .filter((x) => x.imagenId === id)
-      .map((x) => ({
-        kind: 'seccion',
-        id: x.id,
-        title: title(x),
-        section: x.clave === 'portada' ? 'Inicio' : 'Textos',
-        permission: 'textos',
-      })),
+      .flatMap((x) => {
+        const isCover = x.clave === 'portada';
+        const fields = isCover ? coverImageFields : [{ name: 'imagenId' }];
+        return fields.filter(({ name }) => x[name] === id).map(({ name, label }) => ({
+          kind: 'seccion',
+          id: x.id,
+          field: name,
+          title: title(x),
+          section: isCover ? `Portada · ${label}` : 'Textos',
+          permission: isCover ? 'portada' : 'textos',
+        }));
+      }),
   ];
   return {
     upload,

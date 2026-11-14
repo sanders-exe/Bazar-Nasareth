@@ -591,6 +591,19 @@ footer a {
 .preview-card h3 {
   margin: 10px 0;
 }
+.cover-preview {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.cover-preview figure {
+  margin: 0;
+}
+.preview-card .cover-preview img {
+  display: block;
+  aspect-ratio: 9 / 16;
+  margin-bottom: 6px;
+}
 .preview-modal > p {
   font-size: 0.8rem;
   color: #637987;

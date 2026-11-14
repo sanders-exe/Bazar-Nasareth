@@ -48,6 +48,7 @@ public class BazarDb(DbContextOptions<BazarDb> options) : DbContext(options)
         m.Entity<Imagen>().ToTable("Imagen");
         m.Entity<SeccionContenido>().ToTable("SeccionContenido").HasIndex(x => x.Clave).IsUnique();
         m.Entity<SeccionContenido>().HasOne<Imagen>().WithMany().HasForeignKey(x => x.ImagenId).OnDelete(DeleteBehavior.Restrict);
+        m.Entity<SeccionContenido>().HasOne<Imagen>().WithMany().HasForeignKey(x => x.Imagen2Id).OnDelete(DeleteBehavior.Restrict);
         m.Entity<GaleriaImagen>().ToTable("GaleriaImagen").HasIndex(x => x.Orden).IsUnique();
         m.Entity<GaleriaImagen>().HasOne<Imagen>().WithMany().HasForeignKey(x => x.ImagenId).OnDelete(DeleteBehavior.Restrict);
         m.Entity<InformacionNegocio>().ToTable("InformacionNegocio", t => t.HasCheckConstraint("CK_InformacionNegocio_Sede", "[Id] = 1"));

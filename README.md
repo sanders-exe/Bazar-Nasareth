@@ -58,11 +58,13 @@ Los [bocetos del plan de trabajo](docs/bocetos/README.md) muestran la página p�
 
 ## Modelo y alcance
 
+Para actualizar una base existente, confirme el destino, haga un respaldo y ejecute [portada-imagen-2.sql](sql/portada-imagen-2.sql) antes de iniciar esta versión. El script agrega una columna opcional y conserva las imágenes actuales. Una base nueva ya incluye la columna.
+
 El [modelo y diccionario de datos](docs/modelo-datos.md) describe las tablas, relaciones y restricciones de EF Core. `sql/schema.sql` es una consulta de editores, no un instalador. `backend/Data/DatabaseInitialization.cs` inserta el registro central y la primera cuenta al arrancar la API.
 
 Los productos se ofrecen **por encargo**. Cada producto publicado tiene un enlace `/producto/ID` con vista para compartir. La medición de clics de WhatsApp está desactivada por defecto y requiere preparar su tabla en bases existentes. Consulte [operación del catálogo, activación de métricas y respaldos](docs/operacion-catalogo.md) antes de activarla o ejecutar los procedimientos de respaldo y restauración.
 
-Las imágenes administradas se guardan fuera del directorio web en `backend/uploaded-images` o en la ruta configurada con `ImageDirectory`. La API las sirve si un contenido público las usa o si hay sesión activa. Haga copia de esta carpeta junto con la base de datos. Una base nueva parte sin fichas de catálogo y con un contacto inicial. La portada tiene fotos estáticas de respaldo.
+Las imágenes administradas se guardan fuera del directorio web en `backend/uploaded-images` o en la ruta configurada con `ImageDirectory`. La API las sirve si un contenido público las usa o si hay sesión activa. Haga copia de esta carpeta junto con la base de datos. Una base nueva parte sin fichas de catálogo y con un contacto inicial. La portada usa sus fotos originales de vasos personalizados y regalo para padrinos cuando la posición correspondiente no tiene una foto asignada.
 
 ## Verificación sugerida
 

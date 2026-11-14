@@ -83,6 +83,7 @@ export default function Editor({
     imageUsages,
   } = useImageLibrary({ data, permitted, reload, setMessage, setBusy });
   const [inlineUpload, setInlineUpload] = useState({ file: null, alt: '' });
+  const [coverUploadSlot, setCoverUploadSlot] = useState('imagenId');
   const {
     editorForm,
     setEditorForm,
@@ -257,6 +258,7 @@ export default function Editor({
   function open(entity) {
     if (!canDiscardChanges()) return;
     resetPendingChanges();
+    setCoverUploadSlot('imagenId');
     const item = entity
       ? structuredClone(entity)
       : structuredClone(defaults[collection[active] || 'productos']);
@@ -359,6 +361,7 @@ export default function Editor({
     event.preventDefault();
     const route = collection[active];
     if (!route || !draft || busy) return;
+    const fields = active === 'portada' ? fieldsets.portada : fieldsets[route];
     if (inlineUpload.file || inlineUpload.alt.trim()) {
       showErrors({
         _form:
@@ -368,7 +371,7 @@ export default function Editor({
     }
     const nextErrors = {
       ...browserErrors(event.currentTarget),
-      ...contentErrors(active, draft, relationIds, data, fieldsets[route]),
+      ...contentErrors(active, draft, relationIds, data, fields),
     };
     if (Object.keys(nextErrors).length) {
       showErrors(nextErrors);
@@ -485,7 +488,10 @@ export default function Editor({
             img.id,
             ...ids.filter((id) => id !== img.id),
           ]);
-        else setDraft((current) => ({ ...current, imagenId: img.id }));
+        else {
+          const slot = active === 'portada' ? coverUploadSlot : 'imagenId';
+          setDraft((current) => ({ ...current, [slot]: img.id }));
+        }
         setMessage(
           'Foto cargada y asignada al formulario. Abra Vista previa y guarde para aplicar los cambios.',
         );
@@ -824,12 +830,13 @@ export default function Editor({
                         </small>
                       </div>
                     )}
-                    {fieldsets[route].map(([name, label, kind]) => (
+                    {(active === 'portada' ? fieldsets.portada : fieldsets[route]).map(([name, label, kind]) => (
                       <Field
                         key={name}
                         name={name}
                         label={label}
                         kind={kind}
+                        emptyOption={active === 'portada' && kind === 'image' ? 'Usar imagen original' : undefined}
                         value={draft[name]}
                         onChange={(n, v) => {
                           setDraft({ ...draft, [n]: v });
@@ -881,6 +888,8 @@ export default function Editor({
                         relationIds={relationIds}
                         draft={draft}
                         imgAlt={imgAlt}
+                        coverUploadSlot={coverUploadSlot}
+                        setCoverUploadSlot={setCoverUploadSlot}
                       />
                     )}
 

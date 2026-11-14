@@ -6,7 +6,7 @@ Abra `/login` en la página del bazar e inicie sesión con su cuenta editora. Us
 
 | Para cambiar | Pasos |
 | --- | --- |
-| Imagen de portada | En **Imágenes**, suba un JPG, PNG o WebP de hasta 5 MB y describa el contenido en el texto alternativo. Entre en **Portada**, abra la ficha y seleccione la imagen en **Fotografía**. Revise y guarde. Si aún no hay ficha, use **Crear portada**. |
+| Imágenes de portada | En **Portada**, abra la ficha y seleccione **Imagen 1** (foto grande) e **Imagen 2** (foto pequeña). Puede elegir fotos de la biblioteca o subir una nueva usando **Asignar a** para escoger su posición. **Usar imagen original** restaura la foto de vasos en la primera posición o la de regalo para padrinos en la segunda. Revise ambas en **Vista previa** y guarde. Si aún no hay ficha, use **Crear portada**. |
 | Textos | En **Información adicional**, abra una sección y modifique el título o la descripción visible. Conserve la clave al editar una sección existente. Use **Portada** para cambiar el texto de bienvenida. |
 | Producto | En **Productos**, abra la ficha. Para mantenerla publicada, conserve una categoría activa, un nombre, una descripción y al menos una foto. El precio informativo es opcional. Si se indica un precio, elija la moneda. |
 | Servicio | En **Servicios**, edite el nombre, la descripción o el alcance. Puede asignar una foto y un precio informativo opcionales. |
@@ -39,7 +39,7 @@ El script usa la API local, comprueba la cuenta y el contacto iniciales y exige 
 
 ## Guion de aceptación
 
-1. En `http://localhost:5173/login`, entre con la cuenta de demostración. Cambie la foto azul de **Portada** por la rosa. En la página pública compruebe que la portada muestra la rosa y que el **Cuaderno de muestra** conserva la azul.
+1. En `http://localhost:5173/login`, entre con la cuenta de demostración. Cambie **Imagen 1** de **Portada** de azul a rosa y asigne la azul a **Imagen 2**. En la página pública compruebe ambas posiciones y que el **Cuaderno de muestra** conserva la azul.
 2. Cambie la descripción del **Cuaderno de muestra** y el alcance de **Impresión de muestra**. Revise, guarde y compruebe los textos en las fichas públicas.
 3. Cree **Promoción de demostración** como borrador. Use una imagen, descripción y condiciones ficticias. Establezca el inicio para dentro de dos minutos y el fin uno o dos minutos después. Abra **Vista previa** y confirme ambas fechas y horas. Guarde primero como borrador y compruebe que la página no la muestra.
 4. Cambie la promoción a **Publicado**, vuelva a revisar y guarde. Abra la página pública antes del inicio y mantenga esa pestaña visible. Verifique que la tarjeta aparece al empezar y desaparece al vencer, sin recargar manualmente. Desde el editor confirme que la promoción sigue registrada.
