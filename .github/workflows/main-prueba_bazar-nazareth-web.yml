@@ -21,13 +21,13 @@ jobs:
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '10.x'
+          dotnet-version: 'v10.0'
 
       - name: Build with dotnet
-        run: dotnet build backend/BazarNazareth.csproj --configuration Release
+        run: dotnet build --configuration Release
 
       - name: dotnet publish
-        run: dotnet publish backend/BazarNazareth.csproj -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
@@ -36,7 +36,6 @@ jobs:
           path: ${{env.DOTNET_ROOT}}/myapp
 
   deploy:
-    if: github.ref == 'refs/heads/main-prueba'
     runs-on: windows-latest
     needs: build
     permissions:
@@ -52,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_7C7AEAB5DB3D4DC99D94546B213F2B14 }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_B71CF703BB204CFF805E24E53FAFD0E6 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_80DC415B09B444E5AE93F1E2295B7F11 }}
+          client-id: "8b9339e2-8a31-46fe-b7bf-d5a8496a8455"
+          tenant-id: "0834e74d-bed8-48ca-940d-068a68dc839a"
+          subscription-id: "6c2918e8-18c1-40db-9091-a7633c45d7ee"
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -63,3 +62,4 @@ jobs:
           app-name: 'bazar-nazareth-web'
           slot-name: 'Production'
           package: .
+          
